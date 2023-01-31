@@ -5,4 +5,6 @@
     <string name="increment">Increment</string>
     <string name="toast">Hello From Toast!</string>
     <string name="send">Send</string>
+    <string name="count_string">The count is %d</string>
+    <string name="back">Return</string>
 </resources>

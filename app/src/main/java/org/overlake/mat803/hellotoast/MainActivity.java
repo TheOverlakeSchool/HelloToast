@@ -1,8 +1,11 @@
 package org.overlake.mat803.hellotoast;
 
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +15,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     public static final String COUNT = "count";
+    public static final int REQUEST_CODE = 1;
     private int mCount;
     private TextView mCountView;
 
@@ -32,10 +36,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, SecondActivity.class);
-                startActivity(intent);
+                intent.putExtra(COUNT, mCount);
+                startActivityForResult(intent, REQUEST_CODE);
             }
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE) {
+            mCount = data.getIntExtra(COUNT, 0);
+            updateView();
+        }
     }
 
     public void showToast(View view) {
