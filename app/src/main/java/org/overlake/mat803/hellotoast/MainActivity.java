@@ -1,6 +1,9 @@
 package org.overlake.mat803.hellotoast;
 
 import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_CODE = 1;
     private int mCount;
     private TextView mCountView;
+    private ActivityResultLauncher<Intent> mLauncher;
+    private static final String TAG = "Lifecycle State";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,15 +38,13 @@ public class MainActivity extends AppCompatActivity {
         mCountView = findViewById(R.id.show_count);
         updateView();
 
-        findViewById(R.id.send).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
-                intent.putExtra(COUNT, mCount);
-                startActivityForResult(intent, REQUEST_CODE);
+        mLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                mCount = result.getData().getIntExtra(COUNT,0);
+                updateView();
             }
         });
-
+        Log.d(TAG, "onCreate");
     }
 
     @Override
@@ -69,5 +73,42 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(COUNT, mCount);
+        Log.d(TAG, "onSaveInstanceState");
+    }
+
+    public void send(View view) {
+        Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+        intent.putExtra(COUNT, mCount);
+        mLauncher.launch(intent);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i(TAG, "onStart");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume");
     }
 }
